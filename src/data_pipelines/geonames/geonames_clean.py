@@ -1,24 +1,17 @@
-from src.utils.config_loader import spark
+from pyspark.sql import SparkSession
+from dotenv import load_dotenv
 import pyspark.sql.functions as sf
-import argparse
+import os
 
-# Set up argument parser
-parser = argparse.ArgumentParser(description="This script is used to clean geonames files")
+spark = SparkSession.builder.config("spark.sql.warehouse.dir", "/your/desired/path").getOrCreate()
 
-# Define expected arguments
-parser.add_argument("--input_table", help="", required=True)
-parser.add_argument("--output_table", help="", required=True)
-parser.add_argument("--write_options", help="", default={"header": "true"})
-parser.add_argument("--write_mode", help="", default="append")
+load_dotenv()
 
-# Parse the arguments
-args = parser.parse_args()
+file_root_path = os.getenv("DATA_ROOT_PATH")
+geonames_extract_table = os.getenv("GEONAMES_EXTRACT_TABLE")
 
+file_df = spark.read.parquet(os.path.join(file_root_path, geonames_extract_table))
 
-# Load the extracted data
-file_df = spark.read.format("delta").load(args.input_table)
-
-# Normalize column names
 normalized_columns = (
     file_df.withColumnRenamed("Name", "city")
     .withColumnRenamed("Alternate Names", "alternate_city_names")
@@ -53,5 +46,12 @@ updated_columns = (
     .drop("coordinates")
 )
 
-# Save the cleaned data
-updated_columns.write.mode(args.write_mode).format("delta").options(**args.write_options).save(args.output_table)
+# updated_columns.show(5, truncate=False)
+# df.printSchema()
+
+# print([repr(col) for col in df.columns])
+
+data_base_path = os.getenv("DATA_ROOT_PATH")
+data_path = os.getenv("GEONAMES_TRANSFORMED_TABLE")
+full_transformed_path = os.path.join(data_base_path, data_path)
+updated_columns.write.mode("overwrite").saveAsTable(full_transformed_path)
