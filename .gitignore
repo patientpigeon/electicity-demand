@@ -212,5 +212,10 @@ __marimo__/
 # Local data specific to unit testing
 data/test_data
 data/files
+<<<<<<< HEAD
 config
 .job_args
+=======
+config/config.local.py
+config/.config.local.ini
+>>>>>>> ff2e0e3 (updating gitignore)
