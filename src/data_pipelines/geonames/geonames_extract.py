@@ -1,16 +1,17 @@
-from pyspark.sql import SparkSession
+from src.utils.config_loader import config, spark
 from src.utils import shared_helpers as sh
-from dotenv import load_dotenv
 import os
 
+# Extract config values
+file_ingest_root_path = config.get("DEFAULT", "file_ingest_root_path")
+geonames_file = config.get("Geonames", "geonames_file")
+database_root_path = config.get("DEFAULT", "database_root_path")
+geonames_extract_table = config.get("Geonames", "extract_table")
+csv_options = eval(config.get("Geonames", "csv_options"))
 
-load_dotenv()
-
-# Initialize Spark session with warehouse directory from environment variable
-data_root_path = os.getenv("DATA_ROOT_PATH")
-spark = SparkSession.builder.config("spark.sql.warehouse.dir", data_root_path).getOrCreate()
+# Build paths
+geonames_file_path = os.path.join(file_ingest_root_path, geonames_file)
+geonames_extract_path = os.path.join(database_root_path, geonames_extract_table)
 
 # Extract geonames data from the specified file and save it as a table
-geonames_file = os.getenv("GEONAMES_FILE")
-geonames_extract_table = os.getenv("GEONAMES_EXTRACT_TABLE")
-sh.extract_csv(geonames_file, geonames_extract_table, spark, {"header": "true", "delimiter": ";"})
+sh.extract_csv(geonames_file_path, geonames_extract_path, spark, csv_options)

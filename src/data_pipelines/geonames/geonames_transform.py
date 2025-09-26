@@ -1,16 +1,15 @@
-from pyspark.sql import SparkSession
-from dotenv import load_dotenv
+from src.utils.config_loader import spark, config
 import pyspark.sql.functions as sf
 import os
 
-spark = SparkSession.builder.config("spark.sql.warehouse.dir", "/your/desired/path").getOrCreate()
+# Extract config values
+database_root_path = config.get("DEFAULT", "database_root_path")
+geonames_extract_table = config.get("Geonames", "extract_table")
 
-load_dotenv()
+# Build paths
+geonames_extract_path = os.path.join(database_root_path, geonames_extract_table)
 
-file_root_path = os.getenv("DATA_ROOT_PATH")
-geonames_extract_table = os.getenv("GEONAMES_EXTRACT_TABLE")
-
-file_df = spark.read.parquet(os.path.join(file_root_path, geonames_extract_table))
+file_df = spark.read.format("delta").load(geonames_extract_path)
 
 normalized_columns = (
     file_df.withColumnRenamed("Name", "city")
@@ -50,7 +49,5 @@ updated_columns = (
 
 # print([repr(col) for col in df.columns])
 
-data_base_path = os.getenv("DATA_ROOT_PATH")
-data_path = os.getenv("GEONAMES_TRANSFORMED_TABLE")
-full_transformed_path = os.path.join(data_base_path, data_path)
-updated_columns.write.mode("overwrite").saveAsTable(full_transformed_path)
+transformed_table_ = config.get("Geonames", "transform_table")
+updated_columns.write.mode("overwrite").format("delta").save(transformed_table_)
