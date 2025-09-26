@@ -212,3 +212,5 @@ __marimo__/
 # Local data specific to unit testing
 data/test_data
 data/files
+config/config.local.py
+config/.config.local.ini

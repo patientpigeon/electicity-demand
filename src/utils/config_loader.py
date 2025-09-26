@@ -19,10 +19,9 @@ config.read(config_file)
 
 # Initialize Spark session with the specified warehouse directory
 database_root_path = config.get("DEFAULT", "database_root_path")
-# spark = SparkSession.builder.config("spark.sql.warehouse.dir", database_root_path).config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension").config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog").getOrCreate()
 
 builder = (
-    pyspark.sql.SparkSession.builder.appName("MyApp")
+    pyspark.sql.SparkSession.builder.appName("data_pipelines")
     .config("spark.sql.warehouse.dir", database_root_path)
     .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
