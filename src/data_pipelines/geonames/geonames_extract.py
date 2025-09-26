@@ -13,4 +13,4 @@ spark = SparkSession.builder.config("spark.sql.warehouse.dir", data_root_path).g
 # Extract geonames data from the specified file and save it as a table
 geonames_file = os.getenv("GEONAMES_FILE")
 geonames_extract_table = os.getenv("GEONAMES_EXTRACT_TABLE")
-sh.extract_file(geonames_file, geonames_extract_table, spark)
+sh.extract_csv(geonames_file, geonames_extract_table, spark, {"header": "true", "delimiter": ";"})
