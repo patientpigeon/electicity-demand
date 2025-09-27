@@ -1,5 +1,24 @@
-<<<<<<< HEAD
-=======
+# This file allows us to run Spark jobs in different environments (e.g., local, dev, prod)
+# by loading the appropriate configuration settings based on an environment variable.
+# To set up in a new environment:
+# 1. Change the APP_ENV variable in the .env file.
+#       Example: "APP_ENV="local"
+# 2. Create a corresponding config file in the config directory (e.g., config.dev.py, config.prod.py)
+#       Within the config file, set a database_root_path variable to point to the desired delta location
+# 3. Ensure the config file has a create_config function so you can run it and write the config to an INI file.
+#
+#
+# Example config file content (config.local.py):
+# import configparser
+#
+#
+# def create_config():
+#     config = configparser.ConfigParser()
+#
+#     config["DEFAULT"] = {
+#         "database_root_path": "/Users/path/to/repo/electicity-demand/data/test_data",
+#     }
+
 from dotenv import load_dotenv
 from pyspark.sql import SparkSession
 from src.utils import shared_helpers as sh
@@ -29,4 +48,3 @@ builder = (
     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
 )
 spark = configure_spark_with_delta_pip(builder).getOrCreate()
->>>>>>> ff2e0e3 (updating gitignore)
