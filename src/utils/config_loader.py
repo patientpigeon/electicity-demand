@@ -3,7 +3,7 @@
 # To set up in a new environment:
 # 1. Change the APP_ENV variable in the .env file.
 #       Example: "APP_ENV="local"
-# 2. Create a corresponding config file in the config directory (e.g., config.dev.py, config.prod.py)
+# 2. Create a corresponding config file in the config directory (e.g., config/config.dev.py, config/config.prod.py)
 #       Within the config file, set a database_root_path variable to point to the desired delta location
 # 3. Ensure the config file has a create_config function so you can run it and write the config to an INI file.
 #
