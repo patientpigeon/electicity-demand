@@ -14,7 +14,6 @@ parser.add_argument("--write_mode", help="", default="append")
 # Parse the arguments
 args = parser.parse_args()
 
-
 # Load the extracted data
 file_df = spark.read.format("delta").load(args.input_table)
 
