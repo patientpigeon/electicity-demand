@@ -1,18 +1,22 @@
-from src.utils.config_loader import spark, config
+from src.utils.config_loader import spark
 import pyspark.sql.functions as sf
-import os
+import argparse
 
-# Extract config values
-database_root_path = config.get("DEFAULT", "database_root_path")
-geonames_extract_table = config.get("Geonames", "extract_table")
-geonames_clean_table = config.get("Geonames", "clean_table")
+# Set up argument parser
+parser = argparse.ArgumentParser(description="This script is used to clean geonames files")
 
-# Build paths
-geonames_extract_path = os.path.join(database_root_path, geonames_extract_table)
-cleaned_table_path = os.path.join(database_root_path, geonames_clean_table)
+# Define expected arguments
+parser.add_argument("--input_table", help="", required=True)
+parser.add_argument("--output_table", help="", required=True)
+parser.add_argument("--write_options", help="", default={"header": "true"})
+parser.add_argument("--write_mode", help="", default="append")
+
+# Parse the arguments
+args = parser.parse_args()
+
 
 # Load the extracted data
-file_df = spark.read.format("delta").load(geonames_extract_path)
+file_df = spark.read.format("delta").load(args.input_table)
 
 # Normalize column names
 normalized_columns = (
@@ -50,4 +54,4 @@ updated_columns = (
 )
 
 # Save the cleaned data
-updated_columns.write.mode("overwrite").format("delta").option("header", True).save(cleaned_table_path)
+updated_columns.write.mode(args.write_mode).format("delta").options(**args.write_options).save(args.output_table)
