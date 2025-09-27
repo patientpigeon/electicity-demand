@@ -36,4 +36,6 @@ def extract_csv(file_path: str, data_destination: str, spark, options: dict = No
     file_df = spark.read.options(**options).csv(file_path)
 
     # Save the DataFrame to the specified path
-    file_df.write.format("delta").option("delta.columnMapping.mode", "name").mode("overwrite").save(data_destination)
+    file_df.write.format("delta").option("delta.columnMapping.mode", "name").option("header", True).mode(
+        "overwrite"
+    ).save(data_destination)

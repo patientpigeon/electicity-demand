@@ -5,12 +5,16 @@ import os
 # Extract config values
 database_root_path = config.get("DEFAULT", "database_root_path")
 geonames_extract_table = config.get("Geonames", "extract_table")
+geonames_clean_table = config.get("Geonames", "clean_table")
 
 # Build paths
 geonames_extract_path = os.path.join(database_root_path, geonames_extract_table)
+cleaned_table_path = os.path.join(database_root_path, geonames_clean_table)
 
+# Load the extracted data
 file_df = spark.read.format("delta").load(geonames_extract_path)
 
+# Normalize column names
 normalized_columns = (
     file_df.withColumnRenamed("Name", "city")
     .withColumnRenamed("Alternate Names", "alternate_city_names")
@@ -38,16 +42,12 @@ normalized_columns = (
     )
 )
 
+# Split coordinates into latitude and longitude
 updated_columns = (
     normalized_columns.withColumn("longitude", sf.substring_index(normalized_columns.coordinates, ",", 1))
     .withColumn("latitude", sf.substring_index(normalized_columns.coordinates, ",", -1))
     .drop("coordinates")
 )
 
-# updated_columns.show(5, truncate=False)
-# df.printSchema()
-
-# print([repr(col) for col in df.columns])
-
-transformed_table_ = config.get("Geonames", "transform_table")
-updated_columns.write.mode("overwrite").format("delta").save(transformed_table_)
+# Save the cleaned data
+updated_columns.write.mode("overwrite").format("delta").option("header", True).save(cleaned_table_path)
