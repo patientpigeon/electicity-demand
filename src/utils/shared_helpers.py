@@ -1,9 +1,4 @@
 from pyspark.sql import DataFrame
-from dotenv import load_dotenv
-import os
-
-# Load environment variables from the .env file
-load_dotenv()
 
 
 def read_api(api_url: str) -> DataFrame:
@@ -29,18 +24,47 @@ def aggregate_weather_data(df: DataFrame) -> DataFrame:
 
 
 def test():
-    print("test")
+    pass
 
 
-# extracts a file and loads it into a parquet format
-# currently only supports csv files with headers
-def extract_csv(file_path: str, data_path: str, spark, options: dict = None):
-    # Retrieve the base path from environment variables and construct full paths for ingestion and saving
-    file_base_path = os.getenv("FILE_ROOT_PATH")
+# Extracts a file and loads it as a Delta table
+def extract_file(
+    file_path: str,
+    data_destination: str,
+    file_type: str = None,
+    read_options: dict = None,
+    write_options: dict = None,
+    write_mode: str = None,
+    spark=None,
+):
+    # Set default options if none are provided
+    if file_type is None:
+        file_type = "csv"
+    if read_options is None:
+        read_options = {"header": "true", "delimiter": ";"}
+    if write_options is None:
+        write_options = {"header": "true", "delta.columnMapping.mode": "name"}
+    if write_mode is None:
+        write_mode = "append"
 
-    full_file_path = os.path.join(file_base_path, file_path)
+    # Call the appropriate extract function based on file type
+    if file_type == "csv":
+        extract_csv(file_path, data_destination, read_options, write_options, write_mode, spark)
+    else:
+        raise ValueError(f"Unsupported file type: {file_type}")
 
-    file_df = spark.read.options(**options).csv(full_file_path)
 
-    # Save the DataFrame in Parquet format to the specified path
-    file_df.write.saveAsTable(data_path, mode="overwrite", partitionBy=None)
+# Extracts a CSV file and loads it as a Delta table
+def extract_csv(
+    csv_path: str,
+    data_destination: str,
+    read_options: dict = None,
+    write_options: dict = None,
+    write_mode: str = None,
+    spark=None,
+):
+    # read the CSV file into a DataFrame
+    csv_df = spark.read.options(**read_options).csv(csv_path)
+
+    # Save the DataFrame to the specified path
+    csv_df.write.format("delta").options(**write_options).mode(write_mode).save(data_destination)
