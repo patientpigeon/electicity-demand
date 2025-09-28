@@ -209,8 +209,6 @@ __marimo__/
 # Mac specific files
 .DS_Store
 
-# Local data specific to unit testing
 data/test_data
-data/files
 
 config

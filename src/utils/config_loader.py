@@ -2,22 +2,29 @@
 # by loading the appropriate configuration settings based on an environment variable.
 # To set up in a new environment:
 # 1. Change the APP_ENV variable in the .env file.
-#       Example: "APP_ENV="local"
+#       Example: APP_ENV="local"
 # 2. Create a corresponding config file in the config directory (e.g., config/config.dev.py, config/config.prod.py)
 #       Within the config file, set a database_root_path variable to point to the desired delta location
 # 3. Ensure the config file has a create_config function so you can run it and write the config to an INI file.
 #
 #
-# Example config file content (config.local.py):
+#
+# Example config file content (config_local.py):
+#
 # import configparser
 #
 #
 # def create_config():
-#     config = configparser.ConfigParser()
+#    config = configparser.ConfigParser()
 #
-#     config["DEFAULT"] = {
-#         "database_root_path": "/Users/path/to/repo/electicity-demand/data/test_data",
-#     }
+#    config["DEFAULT"] = {
+#        "database_root_path": "/app/test_data",
+#    }
+#
+#
+# if __name__ == "__main__":
+#    create_config
+
 
 from dotenv import load_dotenv
 from pyspark.sql import SparkSession
