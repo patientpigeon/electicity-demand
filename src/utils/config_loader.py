@@ -4,7 +4,7 @@
 # 1. Change the APP_ENV variable in the .env file.
 #       Example: APP_ENV="local"
 # 2. Create a corresponding config file in the config directory (e.g., config/config.dev.py, config/config.prod.py)
-#       Within the config file, set a database_root_path variable to point to the desired delta location
+#       Within the config file, set a database_path_root variable to point to the desired delta location
 # 3. Ensure the config file has a create_config function so you can run it and write the config to an INI file.
 #
 #
@@ -18,17 +18,20 @@
 #    config = configparser.ConfigParser()
 #
 #    config["DEFAULT"] = {
-#        "database_root_path": "/app/test_data",
+#        "database_path_root": "/app/test_data",
+#    with open('config.local.ini', 'w') as configfile:
+#        config.write(configfile)
 #    }
 #
 #
 # if __name__ == "__main__":
-#    create_config
+#    create_config()
 
 
 from dotenv import load_dotenv
 from pyspark.sql import SparkSession
-from src.utils import shared_helpers as sh
+
+# from src.utils import shared_helpers as sh
 import configparser
 import pyspark
 from delta import *
@@ -46,11 +49,11 @@ config = configparser.ConfigParser()
 config.read(config_file)
 
 # Initialize Spark session with the specified warehouse directory
-database_root_path = config.get("DEFAULT", "database_root_path")
+database_path_root = config.get("DEFAULT", "database_path_root")
 
 builder = (
     pyspark.sql.SparkSession.builder.appName("data_pipelines")
-    .config("spark.sql.warehouse.dir", database_root_path)
+    .config("spark.sql.warehouse.dir", database_path_root)
     .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
 )

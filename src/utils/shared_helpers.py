@@ -1,4 +1,5 @@
 from pyspark.sql import DataFrame
+import pyspark.sql.functions as sf, yaml
 
 
 def read_api(api_url: str) -> DataFrame:
@@ -20,10 +21,6 @@ def clean_weather_data(df: DataFrame) -> DataFrame:
 
 
 def aggregate_weather_data(df: DataFrame) -> DataFrame:
-    pass
-
-
-def test():
     pass
 
 
@@ -68,3 +65,38 @@ def extract_csv(
 
     # Save the DataFrame to the specified path
     csv_df.write.format("delta").options(**write_options).mode(write_mode).save(data_destination)
+
+
+# Renames columns in a DataFrame based on a provided mapping
+def rename_columns(df: DataFrame, column_mappings: dict) -> DataFrame:
+    for old_name, new_name in column_mappings.items():
+        if old_name in df.columns:
+            df = df.withColumnRenamed(old_name, new_name)
+        else:
+            pass  # log a warning here
+    return df
+
+
+# Splits a coordinate column into latitude and longitude
+def split_coordinates(df: DataFrame, coord_column: str = "coordinates") -> DataFrame:
+    updated_df = (
+        df.withColumn("longitude", sf.substring_index(df[coord_column], ",", 1))
+        .withColumn("latitude", sf.substring_index(df[coord_column], ",", -1))
+        .drop(coord_column)
+    )
+    return updated_df
+
+
+# Selects specific columns from a DataFrame
+def select_columns(df: DataFrame, columns_to_select: list) -> DataFrame:
+    return df.select(*columns_to_select)
+
+
+# Loads the configuration file and returns column mappings and selected columns
+def load_config(config_file: str):
+    with open(config_file, "r") as file:
+        config = yaml.safe_load(file)
+
+    column_mappings = config.get("column_mappings", {})
+    column_select = config.get("column_select", [])
+    return column_mappings, column_select
