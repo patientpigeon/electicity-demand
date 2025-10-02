@@ -1,5 +1,6 @@
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as sf, yaml
+from src.utils.config_loader import get_env_variable, load_config_file, spark_session
 
 
 def read_api(api_url: str) -> DataFrame:
@@ -93,10 +94,54 @@ def select_columns(df: DataFrame, columns_to_select: list) -> DataFrame:
 
 
 # Loads the configuration file and returns column mappings and selected columns
-def load_config(config_file: str):
+def load_column_config(config_file: str):
     with open(config_file, "r") as file:
         config = yaml.safe_load(file)
 
     column_mappings = config.get("column_mappings", {})
     column_select = config.get("column_select", [])
     return column_mappings, column_select
+
+
+# Loads the configuration file and returns argument mappings
+def load_argument_config(config_file: str):
+    with open(config_file, "r") as file:
+        config = yaml.safe_load(file)
+
+    file_extract_arg_map = config.get("file_extract_arg_map", {})
+    geonames_clean_arg_map = config.get("geonames_clean_arg_map", {})
+    return file_extract_arg_map, geonames_clean_arg_map
+
+
+def run_job(function, arguments):
+    """Run job with the given arguments and initiate a spark session."""
+
+    # Retrieve configuration based on environment
+    env = get_env_variable()
+    config = load_config_file(env)
+    database_path_root = config.get("database_path_root", "./tmp/delta")
+
+    # Remove spark app name to avoid passing it to our function
+    spark_app_name = getattr(arguments, "spark_app_name", "Default_Spark_App")
+    delattr(arguments, "spark_app_name")
+
+    # Use the context manager to handle Spark session lifecycle
+    # The Spark session will be automatically stopped after the job is done
+    with spark_session(
+        spark_app_name,
+        {
+            "spark.sql.warehouse.dir": database_path_root,
+            "spark.sql.extensions": "io.delta.sql.DeltaSparkSessionExtension",
+            "spark.sql.catalog.spark_catalog": "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+        },
+    ) as spark:
+        function(**vars(arguments), spark=spark)
+
+
+def rename_args(arg_mapping: dict, current_args) -> dict:
+    """Rename arguments based on a provided mapping."""
+    renamed_args = {}
+    for k, v in arg_mapping.items():
+        if k in vars(current_args):
+            renamed_args[v] = getattr(current_args, k)
+    return renamed_args

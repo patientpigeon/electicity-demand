@@ -210,5 +210,4 @@ __marimo__/
 .DS_Store
 
 data/test_data
-
-config
+config/config_local.yaml
