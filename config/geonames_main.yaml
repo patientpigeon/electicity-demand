@@ -1,0 +1,13 @@
+file_extract_arg_map:
+  extract_input_file: input_file
+  extract_output_table: output_table
+  extract_file_type: file_type
+  extract_read_options: read_options
+  extract_write_options: write_options
+  extract_write_mode: write_mode
+  
+geonames_clean_arg_map:
+  clean_input_table: input_table
+  clean_output_table: output_table
+  clean_write_options: write_options
+  clean_write_mode: write_mode

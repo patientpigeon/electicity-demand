@@ -3,58 +3,51 @@
 # To set up in a new environment:
 # 1. Change the APP_ENV variable in the .env file.
 #       Example: APP_ENV="local"
-# 2. Create a corresponding config file in the config directory (e.g., config/config.dev.py, config/config.prod.py)
+# 2. Create a corresponding config file in the config directory (e.g., config_local.yaml)
 #       Within the config file, set a database_path_root variable to point to the desired delta location
-# 3. Ensure the config file has a create_config function so you can run it and write the config to an INI file.
 #
 #
+# Example config file content (config_local.yaml):
 #
-# Example config file content (config_local.py):
-#
-# import configparser
-#
-#
-# def create_config():
-#    config = configparser.ConfigParser()
-#
-#    config["DEFAULT"] = {
-#        "database_path_root": "/app/test_data",
-#    with open('config.local.ini', 'w') as configfile:
-#        config.write(configfile)
-#    }
+# database_path_root: /app/data/test_data
+# app_path_root: /app/
 #
 #
-# if __name__ == "__main__":
-#    create_config()
 
 
+from contextlib import contextmanager
 from dotenv import load_dotenv
-from pyspark.sql import SparkSession
-
-# from src.utils import shared_helpers as sh
-import configparser
-import pyspark
+import yaml
 from delta import *
 import os
 
-# Load environment variables from the .env file
-load_dotenv()
 
-# Retrieve environment variable to determine config file
-env = os.getenv("APP_ENV")
-config_file = f"config/config.{env}.ini"
+def get_env_variable() -> str:
+    """Retrieve the application environment from the .env file."""
+    load_dotenv()
+    return os.getenv("APP_ENV", "local")
 
-# Load configuration from the specified INI file
-config = configparser.ConfigParser()
-config.read(config_file)
 
-# Initialize Spark session with the specified warehouse directory
-database_path_root = config.get("DEFAULT", "database_path_root")
+def load_config_file(env: str) -> dict:
+    """Load the configuration file based on the environment."""
+    config_file = f"config/config_{env}.yaml"
+    with open(config_file, "r") as file:
+        return yaml.safe_load(file)
 
-builder = (
-    pyspark.sql.SparkSession.builder.appName("data_pipelines")
-    .config("spark.sql.warehouse.dir", database_path_root)
-    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-)
-spark = configure_spark_with_delta_pip(builder).getOrCreate()
+
+@contextmanager
+def spark_session(appName: str, configs: dict = None):
+    """Create and return a Spark session with Delta Lake support."""
+    import pyspark
+    from delta import configure_spark_with_delta_pip
+
+    builder = pyspark.sql.SparkSession.builder.appName(appName)
+    if configs:
+        for k, v in configs.items():
+            builder = builder.config(k, v)
+
+    spark = configure_spark_with_delta_pip(builder).getOrCreate()
+    try:
+        yield spark
+    finally:
+        spark.stop()
