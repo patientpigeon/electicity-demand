@@ -1,0 +1,2 @@
+api_url: "https://newsapi.org/v2/top-headlines"
+current_weather: "/current.json"

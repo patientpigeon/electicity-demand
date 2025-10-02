@@ -1,5 +1,6 @@
 import json
-from src.utils import shared_helpers as sh
+from pipeline.utils import shared_helpers as sh
+from pipeline.utils import config_loader as cl
 import argparse
 
 
@@ -41,4 +42,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Run main
-    sh.run_job(main, args)
+    cl.run_job(main, args)
