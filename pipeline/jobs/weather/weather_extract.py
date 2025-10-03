@@ -2,7 +2,8 @@ from pipeline.utils import config_loader as cl
 from pipeline.utils import shared_helpers as sh
 from dotenv import load_dotenv
 import requests, os, argparse
-import pyspark
+from pyspark.sql.functions import lit
+from datetime import datetime, timedelta
 from delta import *
 
 
@@ -25,7 +26,7 @@ def main(city: str, start_date: str, end_date: str, spark=None):
     api_fields_extract, dict_schema = sh.load_config_keys(job_config_file, "api_fields_extract", "dict_schema")
 
     # Set up API parameters
-    api_params = {"key": api_key, "q": args.city, "dt": args.start_date, "end_dt": args.end_date}
+    api_params = {"key": api_key, "q": city, "dt": start_date, "end_dt": end_date}
 
     # Make the API request
     response = requests.get(api_url, params=api_params)
@@ -46,16 +47,26 @@ def main(city: str, start_date: str, end_date: str, spark=None):
         schema=dict_schema,
     )
 
-    api_df.printSchema()
-    api_df.write.format("delta").mode("append").save(f"{database_path_root}/weather_extract")
+    # Add City to the DataFrame for context
+    city_df = api_df.withColumn("city", lit(city))
+
+    city_df.printSchema()
+    city_df.write.format("delta").mode("append").save(f"{database_path_root}/weather_extract")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--city", type=str, default="Portland", help="City to get weather data for")
-    parser.add_argument("--start_date", type=str, required=True, help="Start date in YYYY-MM-DD format")
-    parser.add_argument("--end_date", type=str, required=True, help="End date in YYYY-MM-DD format")
+    parser.add_argument("--city", type=str, required=True, help="City to get weather data for")
+    parser.add_argument(
+        "--start_date",
+        type=str,
+        default=sh.default_start_date(),
+        help="Start date in YYYY-MM-DD format. Default is 7 days ago (the maximum allowed by the API).",
+    )
+    parser.add_argument(
+        "--end_date", type=str, default=sh.default_end_date(), help="End date in YYYY-MM-DD format. Default is today."
+    )
     parser.add_argument("--spark_app_name", help="", default="Weather_Extract_Job")
 
     args = parser.parse_args()

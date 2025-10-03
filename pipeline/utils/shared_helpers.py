@@ -1,5 +1,16 @@
 from pyspark.sql import DataFrame
 import yaml
+from datetime import datetime, timedelta
+
+
+def default_start_date(days_ago=7):
+    """Returns a string for the date N days ago (default 7), in YYYY-MM-DD format."""
+    return (datetime.today() - timedelta(days=days_ago)).strftime("%Y-%m-%d")
+
+
+def default_end_date():
+    """Returns today's date as a string in YYYY-MM-DD format."""
+    return datetime.today().strftime("%Y-%m-%d")
 
 
 def extract_csv(

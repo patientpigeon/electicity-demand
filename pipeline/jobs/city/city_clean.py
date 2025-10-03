@@ -26,7 +26,7 @@ def main(
 
     # Defining column mappings
     job_config_file = f"{app_root}/config/city_clean.yaml"
-    column_mappings, column_select = sh.load_config_keys(job_config_file, "column_mappings", "column_select")
+    column_mappings, column_select = cl.load_config_keys(job_config_file, "column_mappings", "column_select")
 
     # Load the extracted data
     file_df = spark.read.format("delta").load(input_table)
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     parser.add_argument("--input_table", help="", required=True)
     parser.add_argument("--output_table", help="", required=True)
     parser.add_argument("--write_options", help="", default='{"header": "true"}')
-    parser.add_argument("--write_mode", help="", default="append")
+    parser.add_argument("--write_mode", help="", default="overwrite")
     parser.add_argument("--spark_app_name", help="", default="City_Clean_Job")
 
     # Parse the arguments

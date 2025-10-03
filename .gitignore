@@ -211,3 +211,4 @@ __marimo__/
 
 data/test_data
 config/config_local.yaml
+delta_tests.py
