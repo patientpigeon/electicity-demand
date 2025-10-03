@@ -2,7 +2,7 @@ from pipeline.utils import shared_helpers as sh
 from pipeline.utils import config_loader as cl
 from pipeline.utils import main_helpers as mh
 from pipeline.jobs.city import city_clean
-from pipeline.common_jobs import file_extract
+from pipeline.generic_jobs import file_extract
 import argparse
 
 

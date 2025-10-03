@@ -3,7 +3,6 @@ from pipeline.utils import shared_helpers as sh
 from dotenv import load_dotenv
 import requests, os, argparse
 from pyspark.sql.functions import lit
-from datetime import datetime, timedelta
 from delta import *
 
 
@@ -33,12 +32,12 @@ def main(city: str, start_date: str, end_date: str, spark=None):
 
     # Process the API response into a Spark DataFrame
     if response.status_code == 200:
-        api_df = response.json()
+        api_dict = response.json()
     else:
         print(f"Error: {response.status_code}")
 
     rows = []
-    for day in api_df["forecast"]["forecastday"]:
+    for day in api_dict["forecast"]["forecastday"]:
         for hour in day["hour"]:
             rows.append({**api_fields_extract})
 
