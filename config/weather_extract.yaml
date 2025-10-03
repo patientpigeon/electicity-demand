@@ -1,2 +1,55 @@
-api_url: "https://newsapi.org/v2/top-headlines"
-current_weather: "/current.json"
+api_fields_extract:
+  "date": day["date"]
+  "time": hour["time"]
+  "temp_c": hour["temp_c"]
+  "temp_f": hour["temp_f"]
+  "condition": hour["condition"]["text"]
+  "is_day": hour["is_day"]
+  "precip_mm": hour["precip_mm"]
+  "snow_cm": hour["snow_cm"]
+  "humidity": hour["humidity"]
+  "cloud": hour["cloud"]
+  "feelslike_c": hour["feelslike_c"]
+  "windchill_c": hour["windchill_c"]
+  "heatindex_c": hour["heatindex_c"]
+  "dewpoint_c": hour["dewpoint_c"]
+  "will_it_rain": hour["will_it_rain"]
+  "chance_of_rain": hour["chance_of_rain"]
+  "will_it_snow": hour["will_it_snow"]
+  "chance_of_snow": hour["chance_of_snow"]
+  "wind_dir": hour["wind_dir"]
+  "pressure_mb": hour["pressure_mb"]
+  "wind_kph": hour["wind_kph"]
+  "vis_km": hour["vis_km"]
+  "gust_kph": hour["gust_kph"]
+  "uv": hour["uv"]
+  "sunrise": day["astro"]["sunrise"]
+  "sunset": day["astro"]["sunset"]
+
+dict_schema:
+- "sunrise"
+- "sunset"
+- "date"
+- "time"
+- "temp_c"
+- "temp_f"
+- "condition"
+- "is_day"
+- "precip_mm"
+- "snow_cm"
+- "humidity"
+- "cloud"
+- "feelslike_c"
+- "windchill_c"
+- "heatindex_c"
+- "dewpoint_c"
+- "will_it_rain"
+- "chance_of_rain"
+- "will_it_snow"
+- "chance_of_snow"
+- "wind_dir"
+- "pressure_mb"
+- "wind_kph"
+- "vis_km"
+- "gust_kph"
+- "uv"
