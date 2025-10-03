@@ -1,15 +1,15 @@
-# Geonames Pipeline
+# City Pipeline
 
 ## Overview
-The geonames pipeline extracts data from geonames files and loads them into our cleaned table.
+The city pipeline extracts data from geonames files and loads them into our cleaned table.
 
 Jobs used
 - `src/utils/common_jobs/file_extract.py` 
-- `src/data_pipelines/geonames/geonames_clean.py`.
+- `src/data_pipelines/city/city_clean.py`.
 
 Relevant tables
-- `geonames_extract`
-- `geonames_clean`
+- `city_extract`
+- `city_clean`
 
 ## Workflow
 ### Task 1 : File Extract
@@ -23,7 +23,7 @@ Parameters.
     - example : 
 
 
-### Task 2 : Geonames Clean
+### Task 2 : City Clean
 
 
 
