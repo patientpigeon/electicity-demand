@@ -22,7 +22,9 @@ def main(city: str, start_date: str, end_date: str, spark=None):
     # Defining API mappings
     app_root = config_params.get("app_path_root")
     job_config_file = f"{app_root}/config/weather_extract.yaml"
-    api_fields_extract, dict_schema = sh.load_config_keys(job_config_file, "api_fields_extract", "dict_schema")
+    api_location, api_day, api_hour, api_astro = sh.load_config_keys(
+        job_config_file, "api_day", "api_location", "api_hour", "api_astro"
+    )
 
     # Set up API parameters
     api_params = {"key": api_key, "q": city, "dt": start_date, "end_dt": end_date}
@@ -47,21 +49,29 @@ def main(city: str, start_date: str, end_date: str, spark=None):
             api_resp_val = api_resp_dict.get(k, default)
         return api_resp_val
 
-    # Build a row dictionary by extracting each field using the mapping
-    row = {}
-    for col, path in api_fields_extract.items():
-        row[col] = get_nested_dict_values(api_response_dict, path)
+    rows = []
+    for day in api_response_dict["forecast"]["forecastday"]:
+        location = api_response_dict.get("location")
+        astro = day.get("astro")
+        for hour in day["hour"]:
+            row = {}
+            for col, path in api_day.items():
+                row[col] = get_nested_dict_values(day, path)
+            for col, path in api_location.items():
+                row[col] = get_nested_dict_values(location, path)
+            for col, path in api_hour.items():
+                row[col] = get_nested_dict_values(hour, path)
+            for col, path in api_astro.items():
+                row[col] = get_nested_dict_values(astro, path)
+            rows.append(row)
 
-    rows = [row]
     api_df = spark.createDataFrame(rows)
 
-    # Add City to the DataFrame for context
-    city_df = api_df.withColumn("city", lit(city))
-
     # Save DataFrame as a Delta table
-    print(api_response_dict)
-    city_df.show(20, False)
-    # city_df.write.format("delta").mode("append").save(f"{database_path_root}/weather_extract")
+    # print(api_response_dict)
+    # api_df.select("is_day", "cloud", "temp_f").show(26, False)
+    api_df.select("name", "time", "sunrise", "sunset", "temp_f").show(26, False)
+    # api_df.write.format("delta").mode("append").save(f"{database_path_root}/weather_extract")
 
 
 if __name__ == "__main__":
