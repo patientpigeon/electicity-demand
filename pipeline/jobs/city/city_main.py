@@ -1,7 +1,7 @@
 from pipeline.utils import shared_helpers as sh
 from pipeline.utils import config_loader as cl
 from pipeline.utils import main_helpers as mh
-from pipeline.jobs.city import city_clean
+from pipeline.jobs import city_clean as cc
 from pipeline.generic_jobs import file_extract
 import argparse
 
@@ -42,7 +42,7 @@ def main(
 
     # Running the jobs in sequence
     file_extract.main(**extract_job_args)
-    city_clean.main(**clean_job_args)
+    cc.main(**clean_job_args)
 
     print("\n\n\nsuccess\n\n")
 
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     parser.add_argument("--clean_input_table", help="", required=True)
     parser.add_argument("--clean_output_table", help="", required=True)
     parser.add_argument("--clean_write_options", help="", default='{"header": "true"}')
-    parser.add_argument("--clean_write_mode", help="", default="append")
+    parser.add_argument("--clean_write_mode", help="", default="overwrite")
     # Spark app name for the pipeline
     parser.add_argument("--spark_app_name", default="City_Pipeline")
 

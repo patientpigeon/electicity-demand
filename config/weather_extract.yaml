@@ -1,55 +1,60 @@
-api_fields_extract:
-  "date": day["date"]
-  "time": hour["time"]
-  "temp_c": hour["temp_c"]
-  "temp_f": hour["temp_f"]
-  "condition": hour["condition"]["text"]
-  "is_day": hour["is_day"]
-  "precip_mm": hour["precip_mm"]
-  "snow_cm": hour["snow_cm"]
-  "humidity": hour["humidity"]
-  "cloud": hour["cloud"]
-  "feelslike_c": hour["feelslike_c"]
-  "windchill_c": hour["windchill_c"]
-  "heatindex_c": hour["heatindex_c"]
-  "dewpoint_c": hour["dewpoint_c"]
-  "will_it_rain": hour["will_it_rain"]
-  "chance_of_rain": hour["chance_of_rain"]
-  "will_it_snow": hour["will_it_snow"]
-  "chance_of_snow": hour["chance_of_snow"]
-  "wind_dir": hour["wind_dir"]
-  "pressure_mb": hour["pressure_mb"]
-  "wind_kph": hour["wind_kph"]
-  "vis_km": hour["vis_km"]
-  "gust_kph": hour["gust_kph"]
-  "uv": hour["uv"]
-  "sunrise": day["astro"]["sunrise"]
-  "sunset": day["astro"]["sunset"]
+api_location:
+  name: [name, "unknown"]
+api_day:
+  date: [date, "unknown"]
+api_hour:
+  time: [time, "unknown"]
+  temp_c: [temp_c, "unknown"]
+  temp_f: [temp_f, "unknown"]
+  condition: [text, "unknown"]
+  is_day: [is_day, "unknown"]
+  precip_mm: [precip_mm, "unknown"]
+  snow_cm: [snow_cm, "unknown"]
+  humidity: [humidity, "unknown"]
+  cloud: [cloud, "unknown"]
+  feelslike_c: [feelslike_c, "unknown"]
+  windchill_c: [windchill_c, "unknown"]
+  heatindex_c: [heatindex_c, "unknown"]
+  dewpoint_c: [dewpoint_c, "unknown"]
+  will_it_rain: [will_it_rain, "unknown"]
+  chance_of_rain: [chance_of_rain, "unknown"]
+  will_it_snow: [will_it_snow, "unknown"]
+  chance_of_snow: [chance_of_snow, "unknown"]
+  wind_dir: [wind_dir, "unknown"]
+  pressure_mb: [pressure_mb, "unknown"]
+  wind_kph: [wind_kph, "unknown"]
+  vis_km: [vis_km, "unknown"]
+  gust_kph: [gust_kph, "unknown"]
+  uv: [uv, "unknown"]
+api_astro:
+  sunrise: [sunrise, "unknown"]
+  sunset: [sunset, "unknown"]
 
-dict_schema:
-- "sunrise"
-- "sunset"
-- "date"
-- "time"
-- "temp_c"
-- "temp_f"
-- "condition"
-- "is_day"
-- "precip_mm"
-- "snow_cm"
-- "humidity"
-- "cloud"
-- "feelslike_c"
-- "windchill_c"
-- "heatindex_c"
-- "dewpoint_c"
-- "will_it_rain"
-- "chance_of_rain"
-- "will_it_snow"
-- "chance_of_snow"
-- "wind_dir"
-- "pressure_mb"
-- "wind_kph"
-- "vis_km"
-- "gust_kph"
-- "uv"
+columns_to_select:
+- name
+- date
+- time
+- temp_c
+- temp_f
+- condition
+- precip_mm
+- snow_cm
+- humidity
+- cloud
+- feelslike_c
+- windchill_c
+- heatindex_c
+- dewpoint_c
+- will_it_rain
+- chance_of_rain
+- will_it_snow
+- chance_of_snow
+- wind_dir
+- pressure_mb
+- wind_kph
+- vis_km
+- gust_kph
+- uv
+- is_day
+- sunrise
+- sunset
