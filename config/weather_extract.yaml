@@ -30,15 +30,13 @@ api_astro:
   sunrise: [sunrise, "unknown"]
   sunset: [sunset, "unknown"]
 
-dict_schema:
-- sunrise
-- sunset
+columns_to_select:
+- name
 - date
 - time
 - temp_c
 - temp_f
 - condition
-- is_day
 - precip_mm
 - snow_cm
 - humidity
@@ -57,3 +55,6 @@ dict_schema:
 - vis_km
 - gust_kph
 - uv
+- is_day
+- sunrise
+- sunset

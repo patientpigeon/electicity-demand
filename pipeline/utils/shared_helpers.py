@@ -77,6 +77,27 @@ def extract_file(
         raise ValueError(f"Unsupported file type: {file_type}")
 
 
+def get_nested_dict_values(api_resp_dict: dict, path: list) -> any:
+    """
+    Extract nested values from dictionary using a list of keys with a default fallback.
+    Keys will be all but the last element, default will be the last element
+    Example: path = ['powerConsumptionBreakdown', 'nuclear', 0]
+
+    Args:
+        api_resp_dict (dict): The dictionary to extract values from.
+        path (list): List of keys leading to the desired value, with the last element as default.
+    Returns:
+        any: The extracted value or the default if any key is missing.
+    """
+    *keys, default = path
+    for k in keys:
+        api_resp_val = api_resp_dict.get(k, default)
+        # prevent NoneType error if value is None
+        if api_resp_val is None:
+            return default
+    return api_resp_val
+
+
 def load_config_keys(config_file: str, *keys) -> tuple:
     """
     Load specified keys from a YAML config file.
@@ -108,14 +129,3 @@ def rename_columns(df: DataFrame, column_mappings: dict) -> DataFrame:
         else:
             pass  # log a warning here
     return df
-
-
-def select_columns(df: DataFrame, columns_to_select: list) -> DataFrame:
-    """Select specific columns from a DataFrame.
-    Args:
-        df (DataFrame): Input DataFrame.
-        columns_to_select (list): List of column names to select.
-    Returns:
-        DataFrame: DataFrame with only the selected columns.
-    """
-    return df.select(*columns_to_select)

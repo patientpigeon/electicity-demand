@@ -22,8 +22,8 @@ def main(city: str, start_date: str, end_date: str, spark=None):
     # Defining API mappings
     app_root = config_params.get("app_path_root")
     job_config_file = f"{app_root}/config/weather_extract.yaml"
-    api_location, api_day, api_hour, api_astro = sh.load_config_keys(
-        job_config_file, "api_day", "api_location", "api_hour", "api_astro"
+    api_location, api_day, api_hour, api_astro, columns_to_select = sh.load_config_keys(
+        job_config_file, "api_day", "api_location", "api_hour", "api_astro", "columns_to_select"
     )
 
     # Set up API parameters
@@ -32,46 +32,39 @@ def main(city: str, start_date: str, end_date: str, spark=None):
     # Make the API request
     response = requests.get(api_url, params=api_params)
 
-    # Process the API response into a Spark DataFrame
+    # Process the API response into a dictionary
     if response.status_code == 200:
         api_response_dict = response.json()
     else:
         print(f"Error: {response.status_code}")
 
-    def get_nested_dict_values(api_resp_dict: dict, path: list) -> any:
-        """
-        Extract nested values from dictionary using a list of keys with a default fallback.
-        Keys will be all but the last element, default will be the last element
-        Example: path = ['powerConsumptionBreakdown', 'nuclear', 0]
-        """
-        *keys, default = path
-        for k in keys:
-            api_resp_val = api_resp_dict.get(k, default)
-        return api_resp_val
-
+    # Build a list of dictionaries by extracting each field using the mapping
     rows = []
+    location = api_response_dict.get("location")
     for day in api_response_dict["forecast"]["forecastday"]:
-        location = api_response_dict.get("location")
         astro = day.get("astro")
+        # Loop through each hour in the day, creating a row for each hour
+        # This flattens the nested structure of the API response
         for hour in day["hour"]:
             row = {}
             for col, path in api_day.items():
-                row[col] = get_nested_dict_values(day, path)
+                row[col] = sh.get_nested_dict_values(day, path)
             for col, path in api_location.items():
-                row[col] = get_nested_dict_values(location, path)
+                row[col] = sh.get_nested_dict_values(location, path)
             for col, path in api_hour.items():
-                row[col] = get_nested_dict_values(hour, path)
+                row[col] = sh.get_nested_dict_values(hour, path)
             for col, path in api_astro.items():
-                row[col] = get_nested_dict_values(astro, path)
+                row[col] = sh.get_nested_dict_values(astro, path)
             rows.append(row)
 
+    # Create DataFrame from the list of dictionary rows
     api_df = spark.createDataFrame(rows)
 
+    # Reorder columns based on the config
+    updated_columns_df = api_df.select(*columns_to_select)
+
     # Save DataFrame as a Delta table
-    # print(api_response_dict)
-    # api_df.select("is_day", "cloud", "temp_f").show(26, False)
-    api_df.select("name", "time", "sunrise", "sunset", "temp_f").show(26, False)
-    # api_df.write.format("delta").mode("append").save(f"{database_path_root}/weather_extract")
+    updated_columns_df.write.format("delta").mode("append").save(f"{database_path_root}/weather_extract")
 
 
 if __name__ == "__main__":

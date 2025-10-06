@@ -1,7 +1,18 @@
-api_fields_extract:
-  cons_date_time: [datetime, "1970-01-01T00:00Z"]
-  cons_updated_at: [updatedAt, "1970-01-01T00:00Z"]
-  cons_created_at: [createdAt, "1970-01-01T00:00Z"]
+base_fields:
+  zone: [zone, "UNKNOWN"]
+  date_time: [datetime, "1970-01-01T00:00Z"]
+  updated_at: [updatedAt, "1970-01-01T00:00Z"]
+  created_at: [createdAt, "1970-01-01T00:00Z"]
+  fossil_free_percentage: [fossilFreePercentage, 0]
+  renewable_percentage: [renewablePercentage, 0]
+  power_consumption_total: [powerConsumptionTotal, 0]
+  power_production_total: [powerProductionTotal, 0]
+  power_import_total: [powerImportTotal, 0]
+  power_export_total: [powerExportTotal, 0]
+  is_estimated: [isEstimated, True]
+  estimation_method: [estimationMethod, "UNKNOWN"]
+  temporal_granularity: [temporalGranularity, "UNKNOWN"]
+power_consumption_breakdown:
   cons_nuclear: [powerConsumptionBreakdown, nuclear, 0]
   cons_geothermal: [powerConsumptionBreakdown, geothermal, 0]
   cons_biomass: [powerConsumptionBreakdown, biomass, 0]
@@ -14,6 +25,7 @@ api_fields_extract:
   cons_unknown: [powerConsumptionBreakdown, unknown, 0]
   cons_hydro_discharge: [powerConsumptionBreakdown, hydro discharge, 0]
   cons_battery_discharge: [powerConsumptionBreakdown, battery discharge, 0]
+power_production_breakdown:
   prod_nuclear: [powerProductionBreakdown, nuclear, 0]
   prod_geothermal: [powerProductionBreakdown, geothermal, 0]
   prod_biomass: [powerProductionBreakdown, biomass, 0]
@@ -26,21 +38,23 @@ api_fields_extract:
   prod_unknown: [powerProductionBreakdown, unknown, 0]
   prod_hydro_discharge: [powerProductionBreakdown, hydro discharge, 0]
   prod_battery_discharge: [powerProductionBreakdown, battery discharge, 0]
-  power_import_breakdown: [powerImportBreakdown, "UNKNOWN"]
-  power_export_breakdown: [powerExportBreakdown, "UNKNOWN"]
-  fossil_free_percentage: [fossilFreePercentage, 0]
-  renewable_percentage: [renewablePercentage, 0]
-  power_consumption_total: [powerConsumptionTotal, 0]
-  power_production_total: [powerProductionTotal, 0]
-  power_import_total: [powerImportTotal, 0]
-  power_export_total: [powerExportTotal, 0]
-  is_estimated: [isEstimated, True]
-  estimation_method: [estimationMethod, "UNKNOWN"]
-  temporal_granularity: [temporalGranularity, "UNKNOWN"]
-dict_schema:
-  - cons_date_time
-  - cons_updated_at
-  - cons_created_at
+
+columns_to_select:
+  - zone
+  - date_time
+  - updated_at
+  - created_at
+  - power_consumption_total
+  - power_production_total
+  - power_import_total
+  - power_export_total
+  # - power_import_breakdown
+  # - power_export_breakdown
+  - fossil_free_percentage
+  - renewable_percentage
+  - is_estimated
+  - estimation_method
+  - temporal_granularity
   - cons_nuclear
   - cons_geothermal
   - cons_biomass
@@ -65,14 +79,3 @@ dict_schema:
   - prod_unknown
   - prod_hydro_discharge
   - prod_battery_discharge
-  - power_import_breakdown
-  - power_export_breakdown
-  - fossil_free_percentage
-  - renewable_percentage
-  - power_consumption_total
-  - power_production_total
-  - power_import_total
-  - power_export_total
-  - is_estimated
-  - estimation_method
-  - temporal_granularity

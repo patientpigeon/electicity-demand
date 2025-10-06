@@ -22,42 +22,37 @@ def main(zone: str, spark=None):
     # Defining API mappings
     app_root = config_params.get("app_path_root")
     job_config_file = f"{app_root}/config/electricity_extract.yaml"
-    api_fields_extract, dict_schema = sh.load_config_keys(job_config_file, "api_fields_extract", "dict_schema")
+    base_fields, power_consumption_breakdown, power_production_breakdown, columns_to_select = sh.load_config_keys(
+        job_config_file, "base_fields", "power_consumption_breakdown", "power_production_breakdown", "columns_to_select"
+    )
 
     # Make the API request
     response = requests.get(api_url, headers={"auth-token": api_key})
 
-    # Process the API response into a Spark DataFrame
+    # Process the API response into a dictionary
     if response.status_code == 200:
         api_response_dict = response.json()
     else:
         print(f"Error: {response.status_code}")
 
-    def get_nested_dict_values(api_resp_dict: dict, path: list) -> any:
-        """
-        Extract nested values from dictionary using a list of keys with a default fallback.
-        Keys will be all but the last element, default will be the last element
-        Example: path = ['powerConsumptionBreakdown', 'nuclear', 0]
-        """
-        *keys, default = path
-        for k in keys:
-            api_resp_val = api_resp_dict.get(k, default)
-        return api_resp_val
-
     # Build a row dictionary by extracting each field using the mapping
     row = {}
-    for col, path in api_fields_extract.items():
-        row[col] = get_nested_dict_values(api_response_dict, path)
+    for col, path in base_fields.items():
+        row[col] = sh.get_nested_dict_values(api_response_dict, path)
+    for col, path in power_consumption_breakdown.items():
+        row[col] = sh.get_nested_dict_values(api_response_dict["powerConsumptionBreakdown"], path)
+    for col, path in power_production_breakdown.items():
+        row[col] = sh.get_nested_dict_values(api_response_dict["powerProductionBreakdown"], path)
 
     # Wrap the row in a list for DataFrame creation
     rows = [row]
     api_df = spark.createDataFrame(rows)
 
-    # Add the zone as a new column
-    weather_df = api_df.withColumn("zone", lit(zone))
+    # Reorder columns based on the config
+    updated_columns_df = api_df.select(*columns_to_select)
 
-    weather_df.show(20, False)
-    # weather_df.write.format("delta").mode("append").save(f"{database_path_root}/electricity_extract")
+    # Save DataFrame as a Delta table
+    updated_columns_df.write.format("delta").mode("append").save(f"{database_path_root}/electricity_extract")
 
 
 if __name__ == "__main__":
