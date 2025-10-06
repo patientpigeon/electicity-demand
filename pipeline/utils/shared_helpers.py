@@ -77,7 +77,7 @@ def extract_file(
         raise ValueError(f"Unsupported file type: {file_type}")
 
 
-def load_config_keys(config_file: str, *keys):
+def load_config_keys(config_file: str, *keys) -> tuple:
     """
     Load specified keys from a YAML config file.
 

@@ -32,25 +32,36 @@ def main(city: str, start_date: str, end_date: str, spark=None):
 
     # Process the API response into a Spark DataFrame
     if response.status_code == 200:
-        api_dict = response.json()
+        api_response_dict = response.json()
     else:
         print(f"Error: {response.status_code}")
 
-    rows = []
-    for day in api_dict["forecast"]["forecastday"]:
-        for hour in day["hour"]:
-            rows.append({**api_fields_extract})
+    def get_nested_dict_values(api_resp_dict: dict, path: list) -> any:
+        """
+        Extract nested values from dictionary using a list of keys with a default fallback.
+        Keys will be all but the last element, default will be the last element
+        Example: path = ['powerConsumptionBreakdown', 'nuclear', 0]
+        """
+        *keys, default = path
+        for k in keys:
+            api_resp_val = api_resp_dict.get(k, default)
+        return api_resp_val
 
-    api_df = spark.createDataFrame(
-        data=rows,
-        schema=dict_schema,
-    )
+    # Build a row dictionary by extracting each field using the mapping
+    row = {}
+    for col, path in api_fields_extract.items():
+        row[col] = get_nested_dict_values(api_response_dict, path)
+
+    rows = [row]
+    api_df = spark.createDataFrame(rows)
 
     # Add City to the DataFrame for context
     city_df = api_df.withColumn("city", lit(city))
 
-    city_df.printSchema()
-    city_df.write.format("delta").mode("append").save(f"{database_path_root}/weather_extract")
+    # Save DataFrame as a Delta table
+    print(api_response_dict)
+    city_df.show(20, False)
+    # city_df.write.format("delta").mode("append").save(f"{database_path_root}/weather_extract")
 
 
 if __name__ == "__main__":

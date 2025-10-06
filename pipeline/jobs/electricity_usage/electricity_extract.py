@@ -22,18 +22,42 @@ def main(zone: str, spark=None):
     # Defining API mappings
     app_root = config_params.get("app_path_root")
     job_config_file = f"{app_root}/config/electricity_extract.yaml"
-    # api_fields_extract, dict_schema = sh.load_config_keys(job_config_file, "api_fields_extract", "dict_schema")
+    api_fields_extract, dict_schema = sh.load_config_keys(job_config_file, "api_fields_extract", "dict_schema")
 
     # Make the API request
     response = requests.get(api_url, headers={"auth-token": api_key})
 
     # Process the API response into a Spark DataFrame
     if response.status_code == 200:
-        api_dict = response.json()
+        api_response_dict = response.json()
     else:
         print(f"Error: {response.status_code}")
 
-    print(api_dict)
+    def get_nested_dict_values(api_resp_dict: dict, path: list) -> any:
+        """
+        Extract nested values from dictionary using a list of keys with a default fallback.
+        Keys will be all but the last element, default will be the last element
+        Example: path = ['powerConsumptionBreakdown', 'nuclear', 0]
+        """
+        *keys, default = path
+        for k in keys:
+            api_resp_val = api_resp_dict.get(k, default)
+        return api_resp_val
+
+    # Build a row dictionary by extracting each field using the mapping
+    row = {}
+    for col, path in api_fields_extract.items():
+        row[col] = get_nested_dict_values(api_response_dict, path)
+
+    # Wrap the row in a list for DataFrame creation
+    rows = [row]
+    api_df = spark.createDataFrame(rows)
+
+    # Add the zone as a new column
+    weather_df = api_df.withColumn("zone", lit(zone))
+
+    weather_df.show(20, False)
+    # weather_df.write.format("delta").mode("append").save(f"{database_path_root}/electricity_extract")
 
 
 if __name__ == "__main__":
