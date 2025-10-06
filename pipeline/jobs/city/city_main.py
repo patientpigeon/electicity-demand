@@ -63,7 +63,7 @@ if __name__ == "__main__":
     parser.add_argument("--clean_input_table", help="", required=True)
     parser.add_argument("--clean_output_table", help="", required=True)
     parser.add_argument("--clean_write_options", help="", default='{"header": "true"}')
-    parser.add_argument("--clean_write_mode", help="", default="append")
+    parser.add_argument("--clean_write_mode", help="", default="overwrite")
     # Spark app name for the pipeline
     parser.add_argument("--spark_app_name", default="City_Pipeline")
 
