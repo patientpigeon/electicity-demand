@@ -41,7 +41,7 @@ def main(
     renamed_df = sh.rename_columns(updated_coords_df, column_mappings)
 
     # Select only the relevant columns
-    updated_columns = renamed_df.select(*column_select)
+    updated_columns = sh.select_columns(renamed_df, column_select)
 
     # Save the cleaned data
     updated_columns.write.mode(write_mode).format("delta").options(**write_options).save(output_table)
