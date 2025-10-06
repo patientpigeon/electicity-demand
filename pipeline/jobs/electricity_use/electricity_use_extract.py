@@ -2,7 +2,6 @@ from pipeline.utils import config_loader as cl
 from pipeline.utils import shared_helpers as sh
 from dotenv import load_dotenv
 import requests, os, argparse
-from pyspark.sql.functions import lit
 from delta import *
 
 

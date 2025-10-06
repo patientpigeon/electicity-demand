@@ -1,4 +1,4 @@
-from pipeline.utils.config_loader import get_env_variable, load_config_file
+from pipeline.utils import config_loader as cl
 from pipeline.utils import shared_helpers as sh
 from pipeline.utils import config_loader as cl
 import argparse
@@ -20,8 +20,8 @@ def main(
         write_options = json.loads(write_options)
 
     # Retrieve app root based on environment
-    env = get_env_variable()
-    config_params = load_config_file(env)
+    env = cl.get_env_variable()
+    config_params = cl.load_config_file(env)
     app_root = config_params.get("app_path_root")
 
     # Defining column mappings

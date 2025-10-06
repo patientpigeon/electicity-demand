@@ -1,7 +1,7 @@
 from pipeline.utils import shared_helpers as sh
 from pipeline.utils import config_loader as cl
 from pipeline.utils import main_helpers as mh
-from pipeline.jobs.city import city_clean
+from pipeline.jobs import city_clean as cc
 from pipeline.generic_jobs import file_extract
 import argparse
 
@@ -42,7 +42,7 @@ def main(
 
     # Running the jobs in sequence
     file_extract.main(**extract_job_args)
-    city_clean.main(**clean_job_args)
+    cc.main(**clean_job_args)
 
     print("\n\n\nsuccess\n\n")
 
