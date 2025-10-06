@@ -7,7 +7,7 @@ from delta import *
 
 
 def main(zone: str, spark=None):
-    """Extract electricity usage data from an API and save it as a Delta table."""
+    """Extract electricity use data from an API and save it as a Delta table."""
 
     # Retrieve database root based on environment
     env = cl.get_env_variable()
@@ -17,11 +17,11 @@ def main(zone: str, spark=None):
     # Load environment variables
     load_dotenv()
     api_url = f"https://api.electricitymaps.com/v3/power-breakdown/latest?zone={zone}"
-    api_key = os.getenv("ELECTRICITY_API_KEY")
+    api_key = os.getenv("ELECTRICITY_USE_API_KEY")
 
     # Defining API mappings
     app_root = config_params.get("app_path_root")
-    job_config_file = f"{app_root}/config/electricity_extract.yaml"
+    job_config_file = f"{app_root}/config/electricity_use_extract.yaml"
     base_fields, power_consumption_breakdown, power_production_breakdown, columns_to_select = sh.load_config_keys(
         job_config_file, "base_fields", "power_consumption_breakdown", "power_production_breakdown", "columns_to_select"
     )
@@ -52,14 +52,14 @@ def main(zone: str, spark=None):
     updated_columns_df = api_df.select(*columns_to_select)
 
     # Save DataFrame as a Delta table
-    updated_columns_df.write.format("delta").mode("append").save(f"{database_path_root}/electricity_extract")
+    updated_columns_df.write.format("delta").mode("append").save(f"{database_path_root}/electricity_use_extract")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--zone", help="", default="US-NW-PGE")
-    parser.add_argument("--spark_app_name", help="", default="Electricity_Extract_Job")
+    parser.add_argument("--spark_app_name", help="", default="Electricity_Use_Extract_Job")
 
     args = parser.parse_args()
 
