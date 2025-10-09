@@ -1,7 +1,7 @@
 from pipeline.utils import shared_helpers as sh
 from pipeline.utils import config_loader as cl
 from pipeline.utils import main_helpers as mh
-from pipeline.jobs import city_clean as cc
+from pipeline.jobs.city import city_clean as cc
 from pipeline.generic_jobs import file_extract
 import argparse
 
@@ -21,6 +21,9 @@ def main(
 ):
     """Run the city pipeline."""
 
+    # Get current arguments
+    current_args = locals()
+
     # Retrieve app root based on environment
     env = cl.get_env_variable()
     config_params = cl.load_config_file(env)
@@ -33,8 +36,8 @@ def main(
     )
 
     # Renaming arguments for each job
-    extract_job_args = mh.rename_subjob_args(extract_job_arg_map, args)
-    clean_job_args = mh.rename_subjob_args(clean_job_arg_map, args)
+    extract_job_args = mh.rename_subjob_args(extract_job_arg_map, current_args)
+    clean_job_args = mh.rename_subjob_args(clean_job_arg_map, current_args)
 
     # Adding the spark session to the arguments
     extract_job_args["spark"] = spark

@@ -26,7 +26,7 @@ def main(
 
     # Defining column mappings
     job_config_file = f"{app_root}/config/city_clean.yaml"
-    column_mappings, column_select = cl.load_config_keys(job_config_file, "column_mappings", "column_select")
+    column_mappings, column_select = sh.load_config_keys(job_config_file, "column_mappings", "column_select")
 
     # Load the extracted data
     file_df = spark.read.format("delta").load(input_table)
@@ -41,7 +41,7 @@ def main(
     renamed_df = sh.rename_columns(updated_coords_df, column_mappings)
 
     # Select only the relevant columns
-    updated_columns = sh.select_columns(renamed_df, column_select)
+    updated_columns = renamed_df.select(*column_select)
 
     # Save the cleaned data
     updated_columns.write.mode(write_mode).format("delta").options(**write_options).save(output_table)
