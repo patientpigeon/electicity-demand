@@ -16,6 +16,9 @@ def main(
 ):
     """Run the electricity use pipeline."""
 
+    # Get current arguments
+    current_args = locals()
+
     # Retrieve app root based on environment
     env = cl.get_env_variable()
     config_params = cl.load_config_file(env)
@@ -28,14 +31,13 @@ def main(
     )
 
     # Renaming arguments for each job
-    extract_job_args = mh.rename_subjob_args(extract_job_arg_map, args)
-    clean_job_args = mh.rename_subjob_args(clean_job_arg_map, args)
+    extract_job_args = mh.rename_subjob_args(extract_job_arg_map, current_args)
+    clean_job_args = mh.rename_subjob_args(clean_job_arg_map, current_args)
 
     # Adding the spark session to the arguments
     extract_job_args["spark"] = spark
     clean_job_args["spark"] = spark
 
-    print(extract_job_args)
     # Running the jobs in sequence
     electricity_use_extract.main(**extract_job_args)
     electricity_use_clean.main(**clean_job_args)

@@ -9,10 +9,9 @@ def rename_subjob_args(arg_mapping: dict, current_args) -> dict:
         dict: Dictionary with renamed arguments.
     """
     renamed_args = {}
-    current_args_dict = vars(current_args)
 
     # Iterate through the mapping and rename arguments
     for old_name, new_name in arg_mapping.items():
-        if old_name in current_args_dict:
-            renamed_args[new_name] = current_args_dict[old_name]
+        if old_name in current_args:
+            renamed_args[new_name] = current_args[old_name]
     return renamed_args

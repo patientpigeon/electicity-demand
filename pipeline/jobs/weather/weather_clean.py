@@ -14,7 +14,6 @@ def main(input_table: str, output_table: str, write_options: str, write_mode: st
 
     # Ensure there are no duplicates between our dataframe and the output table
     output_df = spark.read.format("delta").load(output_table)
-
     deduped_df = file_df.join(output_df.select(*file_df.columns), on=["city", "date", "time"], how="left_anti")
 
     # Write the cleaned data
