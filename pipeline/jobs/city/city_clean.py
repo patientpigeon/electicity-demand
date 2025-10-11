@@ -29,12 +29,12 @@ def main(
     column_mappings, column_select = sh.load_config_keys(job_config_file, "column_mappings", "column_select")
 
     # Load the extracted data
-    file_df = spark.read.format("delta").load(input_table)
+    input_table_df = spark.read.format("delta").load(input_table)
 
     # Split coordinates column into latitude and longitude
     updated_coords_df = (
-        file_df.withColumn("longitude", sf.substring_index(file_df["Coordinates"], ",", 1))
-        .withColumn("latitude", sf.substring_index(file_df["Coordinates"], ",", -1))
+        input_table_df.withColumn("longitude", sf.substring_index(input_table_df["Coordinates"], ",", 1))
+        .withColumn("latitude", sf.substring_index(input_table_df["Coordinates"], ",", -1))
         .drop("Coordinates")
     )
     # Rename columns based on the mapping

@@ -10,11 +10,13 @@ def main(input_table: str, output_table: str, write_options: str, write_mode: st
         write_options = json.loads(write_options)
 
     # Load the extracted data
-    file_df = spark.read.format("delta").load(input_table)
+    input_table_df = spark.read.format("delta").load(input_table)
 
     # Ensure there are no duplicates between our dataframe and the output table
     output_df = spark.read.format("delta").load(output_table)
-    deduped_df = file_df.join(output_df.select(*file_df.columns), on=["city", "date", "time"], how="left_anti")
+    deduped_df = input_table_df.join(
+        output_df.select(*input_table_df.columns), on=["city", "date", "time"], how="left_anti"
+    )
 
     # Write the cleaned data
     deduped_df.write.format("delta").mode(write_mode).options(**write_options).save(output_table)
