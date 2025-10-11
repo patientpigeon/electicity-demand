@@ -60,7 +60,7 @@ def main(city: str, start_date: str, end_date: str, spark=None):
     api_df = spark.createDataFrame(rows)
 
     # Reorder columns based on the config
-    updated_columns_df = api_df.select(*columns_to_select)
+    updated_columns_df = api_df.select(*columns_to_select).withColumnRenamed("name", "city")
 
     # Save DataFrame as a Delta table
     updated_columns_df.write.format("delta").mode("append").save(f"{database_path_root}/weather_extract")

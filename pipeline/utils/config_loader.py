@@ -40,7 +40,8 @@ def load_config_file(env: str) -> dict:
     Returns:
         dict: The configuration parameters loaded from the environment specific YAML file.
     """
-    config_file = f"config/config_{env}.yaml"
+    app_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    config_file = f"{app_root}/config/config_{env}.yaml"
     with open(config_file, "r") as file:
         return yaml.safe_load(file)
 
