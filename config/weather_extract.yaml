@@ -1,0 +1,57 @@
+api_location:
+  city: [location, name, "unknown"]
+api_hour:
+  date_time: [time, "unknown"]
+  temp_c: [temp_c, "unknown"]
+  temp_f: [temp_f, "unknown"]
+  condition: [condition, text, "unknown"]
+  is_day: [is_day, "unknown"]
+  precip_mm: [precip_mm, "unknown"]
+  snow_cm: [snow_cm, "unknown"]
+  humidity: [humidity, "unknown"]
+  cloud: [cloud, "unknown"]
+  feelslike_c: [feelslike_c, "unknown"]
+  windchill_c: [windchill_c, "unknown"]
+  heatindex_c: [heatindex_c, "unknown"]
+  dewpoint_c: [dewpoint_c, "unknown"]
+  will_it_rain: [will_it_rain, "unknown"]
+  chance_of_rain: [chance_of_rain, "unknown"]
+  will_it_snow: [will_it_snow, "unknown"]
+  chance_of_snow: [chance_of_snow, "unknown"]
+  wind_dir: [wind_dir, "unknown"]
+  pressure_mb: [pressure_mb, "unknown"]
+  wind_kph: [wind_kph, "unknown"]
+  vis_km: [vis_km, "unknown"]
+  gust_kph: [gust_kph, "unknown"]
+  uv: [uv, "unknown"]
+api_astro:
+  sunrise: [sunrise, "unknown"]
+  sunset: [sunset, "unknown"]
+
+columns_to_select:
+- city
+- date_time
+- temp_c
+- temp_f
+- condition
+- precip_mm
+- snow_cm
+- humidity
+- cloud
+- feelslike_c
+- windchill_c
+- heatindex_c
+- dewpoint_c
+- will_it_rain
+- chance_of_rain
+- will_it_snow
+- chance_of_snow
+- wind_dir
+- pressure_mb
+- wind_kph
+- vis_km
+- gust_kph
+- uv
+- is_day
+- sunrise
+- sunset

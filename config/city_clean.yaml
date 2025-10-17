@@ -1,0 +1,26 @@
+column_mappings:
+  Name: city
+  Alternate Names: alternate_city_names
+  Country name EN: country
+  Admin1 Code: admin_code_1
+  Admin2 Code: admin_code_2
+  Admin3 Code: admin_code_3
+  Admin4 Code: admin_code_4
+  Population: population
+  Elevation: elevation
+  Timezone: timezone
+  Coordinates: coordinates
+
+column_select:
+  - city
+  - alternate_city_names
+  - country
+  - admin_code_1
+  - admin_code_2
+  - admin_code_3
+  - admin_code_4
+  - population
+  - elevation
+  - timezone
+  - longitude
+  - latitude

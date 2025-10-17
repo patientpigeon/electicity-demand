@@ -1,0 +1,27 @@
+columns_to_select:
+  city: STRING
+  date_time: "TIMESTAMP"
+  temp_c: DOUBLE
+  temp_f: DOUBLE
+  condition: STRING
+  precip_mm: DOUBLE
+  snow_cm: DOUBLE
+  humidity: INT
+  cloud: INT
+  feelslike_c: DOUBLE
+  windchill_c: DOUBLE
+  heatindex_c: DOUBLE
+  dewpoint_c: DOUBLE
+  will_it_rain: INT
+  chance_of_rain: INT
+  will_it_snow: INT
+  chance_of_snow: INT
+  wind_dir: STRING
+  pressure_mb: DOUBLE
+  wind_kph: DOUBLE
+  vis_km: DOUBLE
+  gust_kph: DOUBLE
+  uv: DOUBLE
+  is_day: INT
+  sunrise: STRING
+  sunset: STRING
